@@ -1,4 +1,6 @@
-const { dbConnService } = require('./utils/db')
+
+test('of one value is the value itself', () => {
+    expect(average([1])).toBe(1)const { dbConnService } = require('./utils/db')
 dbConnService.dbConnect()
 const express = require('express')
 const app = express()
