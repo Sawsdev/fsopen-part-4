@@ -1,6 +1,4 @@
-const config = require('./utils/config')
-const logger = require('./utils/logger')
-const { dbConnService } = require('./utils/db');
+const { dbConnService } = require('./utils/db')
 dbConnService.dbConnect()
 const express = require('express')
 const app = express()
