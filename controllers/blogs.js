@@ -10,8 +10,14 @@ blogRouter.get('/', (request, response) => {
   })
   
   blogRouter.post('/', (request, response) => {
-    const blog = new Blog(request.body)
-  
+    const  {
+      body
+    } = request
+    if(!body.title )
+    return response.status(400).send({error: "no title provided"}).end()
+    
+    const blog = new Blog(body)
+    
     blog
       .save()
       .then(result => {
