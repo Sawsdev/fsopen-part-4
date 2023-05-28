@@ -7,6 +7,7 @@ const api = supertest(app)
 
 beforeEach(async () => {
   await Blog.deleteMany({})
+
   let blogPost = new Blog(blogTestHelper.initialBlogs[0])
   await blogPost.save()
   blogPost = new Blog(blogTestHelper.initialBlogs[1])
@@ -67,7 +68,6 @@ describe('When creating a  new blog post', () => {
       .send(newBlogPost)
       .set('Content-type', 'application/json')
       .set('Accept', /application\/json/)
-    console.log(response.body.likes)
     expect(response.body.likes).toBeDefined()
     expect(response.body.likes).toBe(0)
   })
@@ -85,6 +85,23 @@ describe('When creating a  new blog post', () => {
       .set('Accept', /application\/json/)
       .expect(400)
   })
+})
+
+describe('When deleting a single blog post', () => {
+  test('succeeds returning status 204 if id is valid', async () => {
+    const blogsAtStart = await blogTestHelper.blogPostsInDb()
+    const id = blogsAtStart[0].id
+    await api
+      .delete(`/api/blog/${id}`)
+      .expect(204)
+  }, 100000)
+
+  test('should return 400 if the id is not valid', async () => {
+    const wrongId = await blogTestHelper.nonExistingBlogId()
+    await api
+      .delete(`/api/blog/${wrongId}`)
+      .expect(400)
+  }, 100000)
 })
 
 
