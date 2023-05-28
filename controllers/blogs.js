@@ -9,20 +9,18 @@ blogRouter.get('/', (request, response) => {
     })
 })
 
-blogRouter.post('/', (request, response) => {
+blogRouter.post('/', async (request, response) => {
   const  {
     body
   } = request
   if(!body.title )
     return response.status(400).send({ error: 'no title provided' }).end()
-
+  if(!body.likes)
+    body.likes = 0
   const blog = new Blog(body)
 
-  blog
-    .save()
-    .then(result => {
-      response.status(201).json(result)
-    })
+  const result = await blog.save()
+  response.status(201).json(result)
 })
 
 
