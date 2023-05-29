@@ -102,6 +102,12 @@ describe('When deleting a single blog post', () => {
       .delete(`/api/blog/${wrongId}`)
       .expect(400)
   }, 100000)
+
+  test('should return 404 if no id provided', async () => {
+    await api
+      .delete('/api/blog/')
+      .expect(404)
+  })
 })
 
 
