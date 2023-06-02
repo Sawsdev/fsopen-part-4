@@ -16,7 +16,7 @@ beforeEach(async () => {
   await blogPost.save()
   blogPost = new Blog(blogTestHelper.initialBlogs[3])
   await blogPost.save()
-})
+}, 100000)
 describe('When there are blog post in the DB', () => {
 
   test('blog posts are returned in JSON', async () => {
@@ -110,6 +110,52 @@ describe('When deleting a single blog post', () => {
   })
 })
 
+describe('When updating a single blog post', () => {
+  test('should return status 200 if succeded and id is valid and title is not empty', async () => {
+    const blogsAtStart = await blogTestHelper.blogPostsInDb()
+    const id = blogsAtStart[0].id
+    await api
+      .put(`/api/blog/${id}`)
+      .send({
+        title: 'New title ghetz',
+        author: blogsAtStart[0].author,
+        url: 'https://www.newmothafuckinblog.ye',
+        likes: 0
+      })
+      .expect(200)
+    const response = await blogTestHelper.blogPostsInDb()
+    expect(response[0].title).toBe('New title ghetz')
+  })
+
+  test('should return status 400 if id is not valid', async () => {
+    const wrongId = await blogTestHelper.nonExistingBlogId()
+    await api
+      .put(`/api/blog/${wrongId}`)
+      .send({
+        title: 'Blazin blades spotted',
+        author: 'Carl marx',
+        url: 'https://www.newsfeed.com',
+        likes: 50
+      })
+      .expect(400)
+
+  })
+
+  test('should return status 400 if title is empty', async () => {
+    const blogs = await blogTestHelper.blogPostsInDb()
+    const id = blogs[0].id
+    await api
+      .put(`/api/blog/${id}`)
+      .send({
+        author: 'Carl marx',
+        url: 'https://www.newsfeed.com',
+        likes: 50
+      })
+      .expect(400)
+    const response = await blogTestHelper.blogPostsInDb()
+    expect(response[0]).toEqual(blogs[0])
+  })
+})
 
 
 afterAll(async () => {

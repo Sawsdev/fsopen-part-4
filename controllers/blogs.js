@@ -1,5 +1,4 @@
 const blogRouter = require('express').Router()
-const { Logger } = require('mongodb')
 const Blog = require('../models/blog')
 
 blogRouter.get('/', (request, response) => {
@@ -44,5 +43,39 @@ blogRouter.delete('/:id', async (request, response) => {
   }
 })
 
+blogRouter.put('/:id', async (request, response ) => {
+  const {
+    params: { id },
+    body
+  } = request
+  if(!id )
+    response.status(400).send({ error: 'Bad request' }).end()
+
+  const existingBlog = await Blog.findById(id)
+
+  if (!existingBlog || existingBlog === null) {
+    response.status(400).send({ error: 'Incorrect id' }).end()
+  }
+  else
+  {
+
+    if (!body.title){
+      response.status(400).send({ error: 'No title provided. A title is needed' }).end()
+    }
+    else {
+
+      const newBlogPost = {
+        title: body.title,
+        author: body.author,
+        url: body.url,
+        likes: body.likes
+      }
+      const updatedBlog = await Blog.findByIdAndUpdate(id, newBlogPost, { new: true })
+      response.json(updatedBlog)
+    }
+
+  }
+
+})
 
 module.exports = blogRouter
