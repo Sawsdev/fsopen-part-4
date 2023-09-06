@@ -6,7 +6,10 @@ const { Schema, model } = require('mongoose')
 
 const blogSchema = Schema({
   title: String,
-  author: String,
+  author: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  },
   url: String,
   likes: Number
 })
