@@ -45,6 +45,28 @@ describe('When there are users registered in the DB', () => {
     expect(usernames).toContain(newUser.username)
   })
 
+  test('creation fails if the username already exists in the DB', async () => {
+    const usersAtStart = await userTestHelper.usersInDb()
+
+    const newUser = {
+      username: 'root',
+      name: 'El Maromas',
+      password: 'eldarlachupa'
+    }
+
+
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(406)
+      .expect( 'Content-Type', /application\/json/)
+
+    const usersAtEnd = await userTestHelper.usersInDb()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length )
+    expect(result.body.errors.username.message).toContain('`username` to be unique')
+  })
+
 })
 
 
